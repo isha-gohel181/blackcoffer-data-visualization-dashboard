@@ -21,7 +21,7 @@ const SelectFilterComponent = ({ label, filterKey, options: filterOptions, loadi
       <Skeleton className="h-10 w-full" />
     ) : (
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="w-full border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)] text-white">
+        <SelectTrigger className="w-full border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)] text-white text-xs h-8 px-2">
           <SelectValue placeholder={`All ${label}`} />
         </SelectTrigger>
         <SelectContent className="bg-[#1A1A1A] border-[rgba(255,255,255,0.1)] text-white">
@@ -103,7 +103,7 @@ export default function Filters({ onFilterChange, data, loading }) {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 text-xs">
         <SelectFilterComponent label="End Year" filterKey="end_year" options={options.years} loading={loading} value={getSelectValue('end_year')} onChange={(v) => handleFilterChange('end_year', v)} />
         <SelectFilterComponent label="Topic" filterKey="topic" options={options.topics} loading={loading} value={getSelectValue('topic')} onChange={(v) => handleFilterChange('topic', v)} />
         <SelectFilterComponent label="Region" filterKey="region" options={options.regions} loading={loading} value={getSelectValue('region')} onChange={(v) => handleFilterChange('region', v)} />

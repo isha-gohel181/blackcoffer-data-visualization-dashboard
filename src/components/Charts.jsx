@@ -62,7 +62,7 @@ export function TopicDistributionChart({ data }) {
     value: { label: 'Count' },
     ...chartData.reduce((acc, item, index) => {
       acc[item.topic] = { 
-        label: item.topic, 
+        label: item.topic.length > 14 ? `${item.topic.substring(0, 12)}..` : item.topic, 
         color: COLORS[index % COLORS.length] 
       }
       return acc
@@ -84,11 +84,17 @@ export function TopicDistributionChart({ data }) {
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[300px]"
+          className="mx-auto aspect-square max-h-[350px] w-full"
         >
           <PieChart>
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <ChartLegend content={<ChartLegendContent />} />
+            <ChartLegend 
+              content={<ChartLegendContent />} 
+              verticalAlign="bottom"
+              align="center"
+              layout="horizontal"
+              wrapperStyle={{ paddingTop: '20px' }}
+            />
 
             <Pie
               data={processedData}

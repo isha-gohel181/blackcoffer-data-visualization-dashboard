@@ -125,8 +125,8 @@ export default function Home() {
 
           {/* Charts */}
           {loading ? (
-            <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-              {Array.from({ length: 6 }).map((_, i) => (
+            <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 9 }).map((_, i) => (
                 <Card key={i} className="border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)]">
                   <CardHeader>
                     <Skeleton className="h-6 w-1/3 mb-2" />
@@ -147,32 +147,43 @@ export default function Home() {
           ) : (
             <>
               {/* Charts Grid */}
-              <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-                {/* Primary Charts */}
-                <IntensityLikelihoodAreaChart data={filteredData} />
-                <TopicDistributionChart data={filteredData} />
+              <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                {/* Full Width / Large Charts */}
+                <div className="xl:col-span-2">
+                  <IntensityLikelihoodAreaChart data={filteredData} />
+                </div>
+                <div className="xl:col-span-1">
+                  <TopicDistributionChart data={filteredData} />
+                </div>
 
                 {/* Key Metrics */}
                 <IntensityChart data={filteredData} />
                 <LikelihoodChart data={filteredData} />
+                
+                {/* Advanced Analysis */}
+                <SectorChart data={filteredData} hoveredItem={hoveredItem} onHover={setHoveredItem} />
 
                 {/* Geographic & Temporal Analysis */}
                 <YearTrendChart data={filteredData} />
                 <CountryChart data={filteredData} />
                 <RegionAnalysisChart data={filteredData} />
 
-                {/* Advanced Analysis */}
-                <SectorChart data={filteredData} hoveredItem={hoveredItem} onHover={setHoveredItem} />
+                {/* Additional Analysis */}
                 <PESTLEChart data={filteredData} hoveredItem={hoveredItem} onHover={setHoveredItem} />
                 <SourceChart data={filteredData} hoveredItem={hoveredItem} onHover={setHoveredItem} />
-
-                {/* Additional Analysis */}
                 <IntensityByRegionChart data={filteredData} />
-                <TopicsDistributionChart data={filteredData} />
+                
+                <div className="md:col-span-2 xl:col-span-1">
+                   <TopicsDistributionChart data={filteredData} />
+                </div>
 
                 {/* Relevance Analysis (Moved to end) */}
-                <RelevanceChart data={filteredData} />
-                <RelevanceByTopicChart data={filteredData} />
+                <div className="xl:col-span-2">
+                  <RelevanceByTopicChart data={filteredData} />
+                </div>
+                <div className="xl:col-span-1">
+                  <RelevanceChart data={filteredData} />
+                </div>
               </div>
             </>
           )}

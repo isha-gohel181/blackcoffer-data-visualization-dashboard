@@ -54,7 +54,7 @@ export function StatisticsCards({ data, loading }) {
   ]
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {loading
         ? Array.from({ length: 8 }).map((_, i) => (
             <Card
@@ -81,7 +81,7 @@ export function StatisticsCards({ data, loading }) {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-white">{stat.value}</div>
+                <div className="text-2xl sm:text-3xl font-bold text-white tabular-nums">{stat.value}</div>
                 <p className="mt-2 text-xs text-slate-500">{stat.description}</p>
               </CardContent>
             </Card>
