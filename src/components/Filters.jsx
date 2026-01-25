@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import {
   Select,
   SelectContent,
@@ -48,35 +48,27 @@ export default function Filters({ onFilterChange, data, loading }) {
     source: '',
   })
 
-  const [options, setOptions] = useState({
-    years: [],
-    topics: [],
-    regions: [],
-    pestles: [],
-    sectors: [],
-    countries: [],
-    sources: [],
-  })
+  const options = useMemo(() => {
+    if (!data || data.length === 0) {
+      return {
+        years: [],
+        topics: [],
+        regions: [],
+        pestles: [],
+        sectors: [],
+        countries: [],
+        sources: [],
+      }
+    }
 
-  useEffect(() => {
-    if (data && data.length > 0) {
-      const uniqueYears = [...new Set(data.map(d => d.end_year).filter(Boolean))].sort((a, b) => b - a)
-      const uniqueTopics = [...new Set(data.map(d => d.topic).filter(Boolean))].sort()
-      const uniqueRegions = [...new Set(data.map(d => d.region).filter(Boolean))].sort()
-      const uniquePestles = [...new Set(data.map(d => d.pestle).filter(Boolean))].sort()
-      const uniqueSectors = [...new Set(data.map(d => d.sector).filter(Boolean))].sort()
-      const uniqueCountries = [...new Set(data.map(d => d.country).filter(Boolean))].sort()
-      const uniqueSources = [...new Set(data.map(d => d.source).filter(Boolean))].sort()
-
-      setOptions({
-        years: uniqueYears,
-        topics: uniqueTopics,
-        regions: uniqueRegions,
-        pestles: uniquePestles,
-        sectors: uniqueSectors,
-        countries: uniqueCountries,
-        sources: uniqueSources,
-      })
+    return {
+      years: [...new Set(data.map(d => d.end_year).filter(Boolean))].sort((a, b) => b - a),
+      topics: [...new Set(data.map(d => d.topic).filter(Boolean))].sort(),
+      regions: [...new Set(data.map(d => d.region).filter(Boolean))].sort(),
+      pestles: [...new Set(data.map(d => d.pestle).filter(Boolean))].sort(),
+      sectors: [...new Set(data.map(d => d.sector).filter(Boolean))].sort(),
+      countries: [...new Set(data.map(d => d.country).filter(Boolean))].sort(),
+      sources: [...new Set(data.map(d => d.source).filter(Boolean))].sort(),
     }
   }, [data])
 
