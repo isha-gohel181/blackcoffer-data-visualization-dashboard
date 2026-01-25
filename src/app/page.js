@@ -144,8 +144,6 @@ export default function Home() {
                 {/* Key Metrics */}
                 <IntensityChart data={filteredData} />
                 <LikelihoodChart data={filteredData} />
-                <RelevanceChart data={filteredData} />
-                <RelevanceByTopicChart data={filteredData} />
 
                 {/* Geographic & Temporal Analysis */}
                 <YearTrendChart data={filteredData} />
@@ -160,6 +158,10 @@ export default function Home() {
                 {/* Additional Analysis */}
                 <IntensityByRegionChart data={filteredData} />
                 <TopicsDistributionChart data={filteredData} />
+
+                {/* Relevance Analysis (Moved to end) */}
+                <RelevanceChart data={filteredData} />
+                <RelevanceByTopicChart data={filteredData} />
               </div>
             </>
           )}
