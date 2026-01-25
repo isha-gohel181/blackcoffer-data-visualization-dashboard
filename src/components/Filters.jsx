@@ -12,6 +12,31 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 
 
+const SelectFilterComponent = ({ label, filterKey, options: filterOptions, loading, value, onChange }) => (
+  <div className="space-y-2">
+    <label className="block text-sm font-medium text-slate-300">
+      {label}
+    </label>
+    {loading ? (
+      <Skeleton className="h-10 w-full" />
+    ) : (
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger className="w-full border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)] text-white">
+          <SelectValue placeholder={`All ${label}`} />
+        </SelectTrigger>
+        <SelectContent className="bg-[#1A1A1A] border-[rgba(255,255,255,0.1)] text-white">
+          <SelectItem value="all">All {label}</SelectItem>
+          {filterOptions.map((option) => (
+            <SelectItem key={option} value={String(option)}>
+              {option}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    )}
+  </div>
+)
+
 export default function Filters({ onFilterChange, data, loading }) {
   const [filters, setFilters] = useState({
     end_year: '',
@@ -73,31 +98,6 @@ export default function Filters({ onFilterChange, data, loading }) {
     return filters[key] === '' ? 'all' : filters[key]
   }
 
-  const SelectFilterComponent = ({ label, filterKey, options: filterOptions }) => (
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-slate-300">
-        {label}
-      </label>
-      {loading ? (
-        <Skeleton className="h-10 w-full" />
-      ) : (
-        <Select value={getSelectValue(filterKey)} onValueChange={(value) => handleFilterChange(filterKey, value)}>
-          <SelectTrigger className="w-full border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)] text-white">
-            <SelectValue placeholder={`All ${label}`} />
-          </SelectTrigger>
-          <SelectContent className="bg-[#1A1A1A] border-[rgba(255,255,255,0.1)] text-white">
-            <SelectItem value="all">All {label}</SelectItem>
-            {filterOptions.map((option) => (
-              <SelectItem key={option} value={String(option)}>
-                {option}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      )}
-    </div>
-  )
-
   return (
     <div className="rounded-lg border border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)] p-6">
       <div className="mb-6 flex items-center justify-between">
@@ -112,13 +112,13 @@ export default function Filters({ onFilterChange, data, loading }) {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        <SelectFilterComponent label="End Year" filterKey="end_year" options={options.years} />
-        <SelectFilterComponent label="Topic" filterKey="topic" options={options.topics} />
-        <SelectFilterComponent label="Region" filterKey="region" options={options.regions} />
-        <SelectFilterComponent label="PESTLE" filterKey="pestle" options={options.pestles} />
-        <SelectFilterComponent label="Sector" filterKey="sector" options={options.sectors} />
-        <SelectFilterComponent label="Country" filterKey="country" options={options.countries} />
-        <SelectFilterComponent label="Source" filterKey="source" options={options.sources} />
+        <SelectFilterComponent label="End Year" filterKey="end_year" options={options.years} loading={loading} value={getSelectValue('end_year')} onChange={(v) => handleFilterChange('end_year', v)} />
+        <SelectFilterComponent label="Topic" filterKey="topic" options={options.topics} loading={loading} value={getSelectValue('topic')} onChange={(v) => handleFilterChange('topic', v)} />
+        <SelectFilterComponent label="Region" filterKey="region" options={options.regions} loading={loading} value={getSelectValue('region')} onChange={(v) => handleFilterChange('region', v)} />
+        <SelectFilterComponent label="PESTLE" filterKey="pestle" options={options.pestles} loading={loading} value={getSelectValue('pestle')} onChange={(v) => handleFilterChange('pestle', v)} />
+        <SelectFilterComponent label="Sector" filterKey="sector" options={options.sectors} loading={loading} value={getSelectValue('sector')} onChange={(v) => handleFilterChange('sector', v)} />
+        <SelectFilterComponent label="Country" filterKey="country" options={options.countries} loading={loading} value={getSelectValue('country')} onChange={(v) => handleFilterChange('country', v)} />
+        <SelectFilterComponent label="Source" filterKey="source" options={options.sources} loading={loading} value={getSelectValue('source')} onChange={(v) => handleFilterChange('source', v)} />
       </div>
     </div>
   )
