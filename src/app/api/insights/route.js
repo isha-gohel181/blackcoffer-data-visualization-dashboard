@@ -9,6 +9,7 @@ export async function GET(req) {
     const query = {}
 
     const filters = [
+      "end_year",
       "year",
       "topic",
       "country",
@@ -23,7 +24,7 @@ export async function GET(req) {
     filters.forEach((key) => {
       const value = searchParams.get(key)
       if (value) {
-        query[key] = key === "year" ? Number(value) : value
+        query[key] = (key === "year" || key === "end_year") ? Number(value) : value
       }
     })
 

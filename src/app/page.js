@@ -11,16 +11,26 @@ import {
   RelevanceByTopicChart,
   IntensityByRegionChart,
 } from '@/components/BarCharts'
+import { StatisticsCards } from '@/components/StatisticsCards'
+import { IntensityChart, LikelihoodChart, RelevanceChart } from '@/components/MetricsCharts'
+import { YearTrendChart, CountryChart, TopicsDistributionChart, RegionAnalysisChart } from '@/components/AdditionalCharts'
+import { SectorChart, PESTLEChart, SourceChart } from '@/components/CategoryCharts'
+import { Skeleton } from '@/components/ui/skeleton'
+
 
 export default function Home() {
   const [data, setData] = useState([])
   const [filteredData, setFilteredData] = useState([])
   const [loading, setLoading] = useState(true)
+  const [hoveredItem, setHoveredItem] = useState(null)
   const [filters, setFilters] = useState({
     end_year: '',
     topic: '',
     region: '',
     pestle: '',
+    sector: '',
+    country: '',
+    source: '',
   })
 
   // Fetch initial data
@@ -55,6 +65,9 @@ export default function Home() {
       if (newFilters.topic) params.append('topic', newFilters.topic)
       if (newFilters.region) params.append('region', newFilters.region)
       if (newFilters.pestle) params.append('pestle', newFilters.pestle)
+      if (newFilters.sector) params.append('sector', newFilters.sector)
+      if (newFilters.country) params.append('country', newFilters.country)
+      if (newFilters.source) params.append('source', newFilters.source)
 
       const url = params.toString() ? `/api/insights?${params.toString()}` : '/api/insights'
       const response = await fetch(url)
@@ -92,62 +105,28 @@ export default function Home() {
         {/* Main Content */}
         <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
           {/* Filters */}
-          <Filters onFilterChange={handleFilterChange} data={data} />
+          <Filters onFilterChange={handleFilterChange} data={data} loading={loading} />
 
           {/* Stats */}
-          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <Card className="border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)]">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-slate-400">Total Records</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-white">
-                  {filteredData.length}
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)]">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-slate-400">Topics</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-white">
-                  {new Set(filteredData.map(d => d.topic)).size}
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)]">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-slate-400">Regions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-white">
-                  {new Set(filteredData.map(d => d.region)).size}
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)]">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-slate-400">Years Covered</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-white">
-                  {new Set(filteredData.map(d => d.end_year)).size}
-                </div>
-              </CardContent>
-            </Card>
+          <div className="mt-8">
+            <StatisticsCards data={filteredData} loading={loading} />
           </div>
 
           {/* Charts */}
           {loading ? (
-            <Card className="mt-8 border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)]">
-              <CardContent className="flex items-center justify-center p-12">
-                <div className="text-center">
-                  <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[rgba(255,255,255,0.1)] border-t-blue-400"></div>
-                  <p className="mt-4 text-slate-400">Loading data...</p>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Card key={i} className="border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)]">
+                  <CardHeader>
+                    <Skeleton className="h-6 w-1/3 mb-2" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-[300px] w-full" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           ) : filteredData.length === 0 ? (
             <Card className="mt-8 border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)]">
               <CardContent className="p-12 text-center">
@@ -158,20 +137,33 @@ export default function Home() {
             <>
               {/* Charts Grid */}
               <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-                {/* Area Chart */}
+                {/* Primary Charts */}
                 <IntensityLikelihoodAreaChart data={filteredData} />
-
-                {/* Pie Chart */}
                 <TopicDistributionChart data={filteredData} />
 
-                {/* Relevance Chart */}
+                {/* Key Metrics */}
+                <IntensityChart data={filteredData} />
+                <LikelihoodChart data={filteredData} />
+                <RelevanceChart data={filteredData} />
                 <RelevanceByTopicChart data={filteredData} />
 
-                {/* Intensity by Region Chart */}
+                {/* Geographic & Temporal Analysis */}
+                <YearTrendChart data={filteredData} />
+                <CountryChart data={filteredData} />
+                <RegionAnalysisChart data={filteredData} />
+
+                {/* Advanced Analysis */}
+                <SectorChart data={filteredData} hoveredItem={hoveredItem} onHover={setHoveredItem} />
+                <PESTLEChart data={filteredData} hoveredItem={hoveredItem} onHover={setHoveredItem} />
+                <SourceChart data={filteredData} hoveredItem={hoveredItem} onHover={setHoveredItem} />
+
+                {/* Additional Analysis */}
                 <IntensityByRegionChart data={filteredData} />
+                <TopicsDistributionChart data={filteredData} />
               </div>
             </>
           )}
+
         </main>
 
         {/* Footer */}

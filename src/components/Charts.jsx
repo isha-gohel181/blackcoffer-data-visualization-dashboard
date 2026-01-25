@@ -105,7 +105,16 @@ export function TopicDistributionChart({ data }) {
           </PieChart>
         </ChartContainer>
       </CardContent>
+      <CardFooter className="flex-col gap-2 text-sm">
+        <div className="flex items-center gap-2 font-medium leading-none">
+          Top topics <TrendingUp className="h-4 w-4" />
+        </div>
+        <div className="text-muted-foreground leading-none">
+          Showing distribution of top 8 topics
+        </div>
+      </CardFooter>
     </Card>
+
   )
 }
 

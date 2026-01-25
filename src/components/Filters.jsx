@@ -9,13 +9,18 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 
-export default function Filters({ onFilterChange, data }) {
+
+export default function Filters({ onFilterChange, data, loading }) {
   const [filters, setFilters] = useState({
     end_year: '',
     topic: '',
     region: '',
     pestle: '',
+    sector: '',
+    country: '',
+    source: '',
   })
 
   const [options, setOptions] = useState({
@@ -23,6 +28,9 @@ export default function Filters({ onFilterChange, data }) {
     topics: [],
     regions: [],
     pestles: [],
+    sectors: [],
+    countries: [],
+    sources: [],
   })
 
   useEffect(() => {
@@ -31,12 +39,18 @@ export default function Filters({ onFilterChange, data }) {
       const uniqueTopics = [...new Set(data.map(d => d.topic).filter(Boolean))].sort()
       const uniqueRegions = [...new Set(data.map(d => d.region).filter(Boolean))].sort()
       const uniquePestles = [...new Set(data.map(d => d.pestle).filter(Boolean))].sort()
+      const uniqueSectors = [...new Set(data.map(d => d.sector).filter(Boolean))].sort()
+      const uniqueCountries = [...new Set(data.map(d => d.country).filter(Boolean))].sort()
+      const uniqueSources = [...new Set(data.map(d => d.source).filter(Boolean))].sort()
 
       setOptions({
         years: uniqueYears,
         topics: uniqueTopics,
         regions: uniqueRegions,
         pestles: uniquePestles,
+        sectors: uniqueSectors,
+        countries: uniqueCountries,
+        sources: uniqueSources,
       })
     }
   }, [data])
@@ -50,7 +64,7 @@ export default function Filters({ onFilterChange, data }) {
   }
 
   const clearFilters = () => {
-    const emptyFilters = { end_year: '', topic: '', region: '', pestle: '' }
+    const emptyFilters = { end_year: '', topic: '', region: '', pestle: '', sector: '', country: '', source: '' }
     setFilters(emptyFilters)
     onFilterChange(emptyFilters)
   }
@@ -58,6 +72,31 @@ export default function Filters({ onFilterChange, data }) {
   const getSelectValue = (key) => {
     return filters[key] === '' ? 'all' : filters[key]
   }
+
+  const SelectFilterComponent = ({ label, filterKey, options: filterOptions }) => (
+    <div className="space-y-2">
+      <label className="block text-sm font-medium text-slate-300">
+        {label}
+      </label>
+      {loading ? (
+        <Skeleton className="h-10 w-full" />
+      ) : (
+        <Select value={getSelectValue(filterKey)} onValueChange={(value) => handleFilterChange(filterKey, value)}>
+          <SelectTrigger className="w-full border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)] text-white">
+            <SelectValue placeholder={`All ${label}`} />
+          </SelectTrigger>
+          <SelectContent className="bg-[#1A1A1A] border-[rgba(255,255,255,0.1)] text-white">
+            <SelectItem value="all">All {label}</SelectItem>
+            {filterOptions.map((option) => (
+              <SelectItem key={option} value={String(option)}>
+                {option}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
+    </div>
+  )
 
   return (
     <div className="rounded-lg border border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)] p-6">
@@ -72,87 +111,16 @@ export default function Filters({ onFilterChange, data }) {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {/* Year Filter */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-slate-300">
-            End Year
-          </label>
-          <Select value={getSelectValue('end_year')} onValueChange={(value) => handleFilterChange('end_year', value)}>
-            <SelectTrigger className="w-full border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)] text-white">
-              <SelectValue placeholder="All Years" />
-            </SelectTrigger>
-            <SelectContent className="bg-[#1A1A1A] border-[rgba(255,255,255,0.1)] text-white">
-              <SelectItem value="all">All Years</SelectItem>
-              {options.years.map((year) => (
-                <SelectItem key={year} value={String(year)}>
-                  {year}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Topic Filter */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-slate-300">
-            Topic
-          </label>
-          <Select value={getSelectValue('topic')} onValueChange={(value) => handleFilterChange('topic', value)}>
-            <SelectTrigger className="w-full border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)] text-white">
-              <SelectValue placeholder="All Topics" />
-            </SelectTrigger>
-            <SelectContent className="bg-[#1A1A1A] border-[rgba(255,255,255,0.1)] text-white">
-              <SelectItem value="all">All Topics</SelectItem>
-              {options.topics.map((topic) => (
-                <SelectItem key={topic} value={topic}>
-                  {topic}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Region Filter */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-slate-300">
-            Region
-          </label>
-          <Select value={getSelectValue('region')} onValueChange={(value) => handleFilterChange('region', value)}>
-            <SelectTrigger className="w-full border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)] text-white">
-              <SelectValue placeholder="All Regions" />
-            </SelectTrigger>
-            <SelectContent className="bg-[#1A1A1A] border-[rgba(255,255,255,0.1)] text-white">
-              <SelectItem value="all">All Regions</SelectItem>
-              {options.regions.map((region) => (
-                <SelectItem key={region} value={region}>
-                  {region}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* PESTLE Filter */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-slate-300">
-            Pastle
-          </label>
-          <Select value={getSelectValue('pestle')} onValueChange={(value) => handleFilterChange('pestle', value)}>
-            <SelectTrigger className="w-full border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)] text-white">
-              <SelectValue placeholder="All PESTLE" />
-            </SelectTrigger>
-            <SelectContent className="bg-[#1A1A1A] border-[rgba(255,255,255,0.1)] text-white">
-              <SelectItem value="all">All Pastle</SelectItem>
-              {options.pestles.map((pestle) => (
-                <SelectItem key={pestle} value={pestle}>
-                  {pestle}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <SelectFilterComponent label="End Year" filterKey="end_year" options={options.years} />
+        <SelectFilterComponent label="Topic" filterKey="topic" options={options.topics} />
+        <SelectFilterComponent label="Region" filterKey="region" options={options.regions} />
+        <SelectFilterComponent label="PESTLE" filterKey="pestle" options={options.pestles} />
+        <SelectFilterComponent label="Sector" filterKey="sector" options={options.sectors} />
+        <SelectFilterComponent label="Country" filterKey="country" options={options.countries} />
+        <SelectFilterComponent label="Source" filterKey="source" options={options.sources} />
       </div>
     </div>
   )
 }
+
