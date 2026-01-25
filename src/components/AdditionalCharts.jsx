@@ -8,6 +8,14 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/
 
 const COLORS = ['#6B5FED', '#7D6FE6', '#8B7FE8', '#9D4AC8', '#574AE2', '#A855F7', '#D946EF', '#EC4899', '#F43F5E', '#FB7185']
 
+const PIE_COLORS = [
+  'hsl(265 70% 60%)',   // Purple
+  'hsl(200 70% 50%)',   // Blue
+  'hsl(150 60% 45%)',   // Green
+  'hsl(35 90% 55%)',    // Orange
+  'hsl(340 75% 55%)',   // Pink
+]
+
 export function YearTrendChart({ data }) {
   if (!data || data.length === 0) {
     return (
@@ -147,15 +155,6 @@ export function CountryChart({ data }) {
 }
 
 export function TopicsDistributionChart({ data }) {
-  // Static colors for topics
-  const PIE_COLORS = [
-    'hsl(265 70% 60%)',   // Purple
-    'hsl(200 70% 50%)',   // Blue
-    'hsl(150 60% 45%)',   // Green
-    'hsl(35 90% 55%)',    // Orange
-    'hsl(340 75% 55%)',   // Pink
-  ]
-
   const processedData = React.useMemo(() => {
     if (!data || data.length === 0) return { chartData: [], chartConfig: { frequency: { label: 'Frequency' } } }
 

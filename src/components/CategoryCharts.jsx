@@ -79,18 +79,9 @@ const CustomizedContent = (props) => {
 };
 
 export function SectorChart({ data, hoveredItem, onHover }) {
-  if (!data || data.length === 0) {
-    return (
-      <Card className="border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)]">
-        <CardContent className="flex items-center justify-center p-12">
-          <p className="text-slate-400">No data available</p>
-        </CardContent>
-      </Card>
-    )
-  }
-
   // Optimize data for Chart
   const sectorData = React.useMemo(() => {
+    if (!data || data.length === 0) return []
     return data
       .filter(d => d.sector)
       .reduce((acc, d) => {
@@ -109,6 +100,16 @@ export function SectorChart({ data, hoveredItem, onHover }) {
         fill: COLORS[index % COLORS.length] 
       }))
   }, [data])
+
+  if (!data || data.length === 0) {
+    return (
+      <Card className="border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)]">
+        <CardContent className="flex items-center justify-center p-12">
+          <p className="text-slate-400">No data available</p>
+        </CardContent>
+      </Card>
+    )
+  }
 
   const chartConfig = sectorData.reduce((acc, item, index) => {
     acc[`item_${index}`] = {
