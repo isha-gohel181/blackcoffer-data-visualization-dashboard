@@ -87,14 +87,25 @@ export default function Home() {
     <div className="min-h-screen">
       <div className="bg-[#0B0B0B]">
         {/* Header */}
-        <header className="border-b border-[rgba(255,255,255,0.05)] bg-[#0B0B0B]">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+        <header className="relative border-b border-[rgba(255,255,255,0.05)] bg-[#0B0B0B] overflow-hidden">
+          {/* Subtle Grayscale Grid Background */}
+          <div 
+            className="absolute inset-0 z-0 opacity-10"
+            style={{
+              backgroundImage: `
+                linear-gradient(to right, rgba(255,255,255,0.4 ) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.4) 1px, transparent 1px)
+              `,
+              backgroundSize: '30px 30px',
+            }}
+          />
+          <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-white">
+                <h1 className="text-3xl font-bold text-white tracking-tight">
                   Insights Dashboard
                 </h1>
-                <p className="mt-2 text-slate-400">
+                <p className="mt-2 text-slate-400 font-medium">
                   Explore and analyze business intelligence data
                 </p>
               </div>
