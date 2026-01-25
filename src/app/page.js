@@ -147,14 +147,13 @@ export default function Home() {
           ) : (
             <>
               {/* Charts Grid */}
-              <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+              <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
                 {/* Full Width / Large Charts */}
-                <div className="xl:col-span-2">
+                <div className="lg:col-span-2">
                   <IntensityLikelihoodAreaChart data={filteredData} />
                 </div>
-                <div className="xl:col-span-1">
-                  <TopicDistributionChart data={filteredData} />
-                </div>
+                
+                <TopicDistributionChart data={filteredData} />
 
                 {/* Key Metrics */}
                 <IntensityChart data={filteredData} />
@@ -172,18 +171,8 @@ export default function Home() {
                 <PESTLEChart data={filteredData} hoveredItem={hoveredItem} onHover={setHoveredItem} />
                 <SourceChart data={filteredData} hoveredItem={hoveredItem} onHover={setHoveredItem} />
                 <IntensityByRegionChart data={filteredData} />
-                
-                <div className="md:col-span-2 xl:col-span-1">
-                   <TopicsDistributionChart data={filteredData} />
-                </div>
-
-                {/* Relevance Analysis (Moved to end) */}
-                <div className="xl:col-span-2">
-                  <RelevanceByTopicChart data={filteredData} />
-                </div>
-                <div className="xl:col-span-1">
-                  <RelevanceChart data={filteredData} />
-                </div>
+                <RelevanceByTopicChart data={filteredData} />
+                <TopicsDistributionChart data={filteredData} />
               </div>
             </>
           )}
