@@ -2,28 +2,40 @@
 
 import * as React from 'react'
 import { TrendingUp } from 'lucide-react'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Treemap, Label, LabelList } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Treemap, Label, LabelList, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card'
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
 
 const COLORS = ['#6B5FED', '#7D6FE6', '#8B7FE8', '#9D4AC8', '#574AE2', '#A855F7', '#D946EF', '#EC4899', '#F43F5E', '#FB7185']
 
-const CustomizedContent = ({ x, y, width, height, name, size, fill, hoveredItem }) => {
-  if (width < 25 || height < 15) return null;
+const CustomizedContent = (props) => {
+  const { x, y, width, height, name, value, fill, hoveredItem } = props;
+  if (width < 30 || height < 20) return null;
 
   const isHovered = hoveredItem && hoveredItem.name === name;
-  const opacity = !hoveredItem ? 1 : isHovered ? 1 : 0.3;
+  const opacity = !hoveredItem ? 1 : isHovered ? 1 : 0.4;
 
-  // Extremely adaptive thresholds
-  const canShowTitle = width > 30 && height > 20;
-  const canShowSize = width > 45 && height > 40;
+  // Dynamic thresholds
+  const canShowTitle = width > 40 && height > 25;
+  const canShowValue = width > 60 && height > 45;
   
-  // Dynamic font size: scales with box size but stays within readable bounds
-  const titleFontSize = Math.max(9, Math.min(width / 8, height / 3, 14));
-  const sizeFontSize = Math.max(8, titleFontSize - 2);
+  // Responsive font sizes
+  const titleFontSize = Math.max(9, Math.min(width / 8, height / 4, 12));
+  const valueFontSize = Math.max(8, titleFontSize - 1.5);
+
+  // Dynamic character limit based on width to prevent overflow
+  // 0.6 is a safe multiplier for variable width fonts
+  const maxChars = Math.floor((width - 5) / (titleFontSize * 0.55));
+  
+  const getTruncatedText = (text, limit) => {
+    if (!text) return "";
+    const str = String(text);
+    if (str.length <= limit) return str;
+    return str.substring(0, Math.max(0, limit - 2)) + "..";
+  };
 
   return (
-    <g opacity={opacity} style={{ transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)' }}>
+    <g opacity={opacity} style={{ transition: 'all 0.3s ease' }}>
       <rect
         x={x}
         y={y}
@@ -31,34 +43,35 @@ const CustomizedContent = ({ x, y, width, height, name, size, fill, hoveredItem 
         height={height}
         style={{
           fill: fill || '#6B5FED',
-          stroke: isHovered ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.1)',
-          strokeWidth: isHovered ? 2 : 1,
+          stroke: isHovered ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.05)',
+          strokeWidth: isHovered ? 1.2 : 0.5,
         }}
-        rx={6}
+        rx={3}
       />
-      {canShowTitle && name && (
+      {canShowTitle && (
         <text
           x={x + width / 2}
-          y={y + height / 2 + (canShowSize ? -6 : 4)}
+          y={y + height / 2 + (canShowValue ? -5 : 4)}
           textAnchor="middle"
-          fill="#fff"
+          fill="rgba(255,255,255,0.9)"
           fontSize={titleFontSize}
-          fontWeight="600"
+          fontWeight="400"
           className="pointer-events-none select-none"
         >
-          {width < 60 ? (name.length > 4 ? `${name.substring(0, 3)}.` : name) : name.length > 18 ? `${name.substring(0, 15)}..` : name}
+          {getTruncatedText(name, maxChars)}
         </text>
       )}
-      {canShowSize && (
+      {canShowValue && (
         <text
           x={x + width / 2}
           y={y + height / 2 + 10}
           textAnchor="middle"
-          fill="rgba(255,255,255,0.7)"
-          fontSize={sizeFontSize}
+          fill="rgba(255,255,255,0.6)"
+          fontSize={valueFontSize}
+          fontWeight="400"
           className="pointer-events-none select-none"
         >
-          {size}
+          {getTruncatedText(`${value} records`, maxChars + 2)}
         </text>
       )}
     </g>
@@ -111,41 +124,29 @@ export function SectorChart({ data, hoveredItem, onHover }) {
         <CardTitle>Sector Distribution</CardTitle>
         <CardDescription>Records analyzed by industry sector</CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="w-full h-[350px]">
-          <BarChart
+      <CardContent className="h-[400px]">
+        <ChartContainer config={chartConfig} className="w-full h-full">
+          <Treemap
             data={sectorData}
-            layout="vertical"
-            margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
+            dataKey="count"
+            stroke="#fff"
+            fill="#8884d8"
+            content={<CustomizedContent hoveredItem={hoveredItem} />}
+            onMouseEnter={(e) => onHover && onHover(e)}
+            onMouseLeave={() => onHover && onHover(null)}
           >
-            <XAxis type="number" hide />
-            <YAxis
-              dataKey="name"
-              type="category"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tick={{ fill: 'rgba(255,255,255,0.6)', fontSize: 12 }}
-              width={120}
-            />
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+              content={
+                <ChartTooltipContent 
+                  hideLabel={false}
+                  labelKey="name"
+                  indicator="dot"
+                  className="min-w-[120px]"
+                />
+              }
             />
-            <Bar
-              dataKey="count"
-              radius={[0, 4, 4, 0]}
-              barSize={18}
-            >
-              <LabelList
-                dataKey="count"
-                position="right"
-                offset={10}
-                className="fill-white font-medium"
-                fontSize={11}
-              />
-            </Bar>
-          </BarChart>
+          </Treemap>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm text-muted-foreground">
@@ -191,68 +192,44 @@ export function PESTLEChart({ data, hoveredItem, onHover }) {
     <Card className="border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)]">
       <CardHeader>
         <CardTitle>PESTLE Analysis</CardTitle>
-        <CardDescription>Distribution by PESTLE category</CardDescription>
+        <CardDescription>Strategic category distribution</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={{ count: { label: 'Records', color: '#D946EF' } }} className="w-full h-[300px]">
-          <BarChart 
-            data={chartData} 
-            margin={{ top: 20, right: 30, left: 0, bottom: 60 }}
-            onMouseMove={(state) => {
-              if (state && state.activeTooltipIndex !== undefined && chartData[state.activeTooltipIndex]) {
-                onHover && onHover({ name: chartData[state.activeTooltipIndex].pestle })
-              }
-            }}
-            onMouseLeave={() => onHover && onHover(null)}
+        <ChartContainer config={{ count: { label: 'Records' } }} className="w-full h-[350px]">
+          <RadarChart
+            data={chartData}
+            cx="50%"
+            cy="50%"
+            outerRadius="80%"
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-            <XAxis
-              dataKey="pestle"
-              stroke="rgba(255,255,255,0.5)"
-              angle={-45}
-              textAnchor="end"
-              height={80}
-              tick={{ fontSize: 11 }}
+            <PolarGrid stroke="rgba(255,255,255,0.1)" />
+            <PolarAngleAxis 
+              dataKey="pestle" 
+              tick={{ fill: 'rgba(255,255,255,0.6)', fontSize: 11 }} 
             />
-            <YAxis stroke="rgba(255,255,255,0.5)" />
-            <ChartTooltip content={<ChartTooltipContent />} cursor={false} />
-            <Bar 
-              dataKey="count" 
-              fill="var(--color-count)" 
-              radius={[8, 8, 0, 0]}
-              shape={
-                <BarShape 
-                  hoveredItem={hoveredItem}
-                  dataKey="pestle"
-                />
-              }
+            <PolarRadiusAxis 
+              angle={30} 
+              domain={[0, 'auto']} 
+              tick={false}
+              axisLine={false}
             />
-          </BarChart>
+            <Radar
+              name="Records"
+              dataKey="count"
+              stroke="#D946EF"
+              fill="#D946EF"
+              fillOpacity={0.6}
+            />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+          </RadarChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
-          PESTLE distribution <TrendingUp className="h-4 w-4" />
+          Category coverage <TrendingUp className="h-4 w-4" />
         </div>
       </CardFooter>
     </Card>
-  )
-}
-
-const BarShape = ({ x, y, width, height, fill, hoveredItem, dataKey, payload }) => {
-  const isHovered = hoveredItem && payload && hoveredItem.name === payload[dataKey];
-  const opacity = !hoveredItem ? 1 : isHovered ? 1 : 0.3;
-  
-  return (
-    <rect
-      x={x}
-      y={y}
-      width={width}
-      height={height}
-      fill={fill}
-      opacity={opacity}
-      style={{ transition: 'opacity 0.2s ease' }}
-    />
   )
 }
 

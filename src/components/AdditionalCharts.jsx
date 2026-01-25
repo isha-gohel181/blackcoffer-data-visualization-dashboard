@@ -125,15 +125,23 @@ export function CountryChart({ data }) {
       </CardHeader>
       <CardContent>
         <ChartContainer config={{ count: { label: 'Records', color: '#9D4AC8' } }} className="w-full h-[300px]">
-          <BarChart data={chartData} layout="vertical" margin={{ top: 20, right: 30, left: 100, bottom: 20 }}>
+          <BarChart data={chartData} layout="vertical" margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
             <XAxis type="number" stroke="rgba(255,255,255,0.5)" />
-            <YAxis dataKey="country" type="category" width={90} stroke="rgba(255,255,255,0.5)" tick={{ fontSize: 11 }} />
+            <YAxis dataKey="country" type="category" width={100} stroke="rgba(255,255,255,0.5)" tick={{ fontSize: 11 }} />
             <ChartTooltip content={<ChartTooltipContent />} cursor={false} />
             <Bar dataKey="count" fill="var(--color-count)" radius={[0, 8, 8, 0]} />
           </BarChart>
         </ChartContainer>
       </CardContent>
+      <CardFooter className="flex-col items-center gap-1 text-sm pb-6">
+        <div className="flex items-center gap-2 leading-none font-medium text-foreground mb-1">
+          Top 10 Countries by distribution <TrendingUp className="h-4 w-4" />
+        </div>
+        <div className="text-muted-foreground leading-none text-xs text-center">
+          Showing record distribution across the most prominent nations
+        </div>
+      </CardFooter>
     </Card>
   )
 }
@@ -280,31 +288,70 @@ export function RegionAnalysisChart({ data }) {
     }, [])
     .sort((a, b) => b.count - a.count)
     .slice(0, 10)
+    .map((item, index) => ({
+      ...item,
+      fill: COLORS[index % COLORS.length]
+    }))
+
+  // Create dynamic config for the mixed chart
+  const chartConfig = chartData.reduce((acc, item, index) => {
+    acc[`region_${index}`] = {
+      label: item.region,
+      color: item.fill
+    }
+    return acc
+  }, { count: { label: 'Records' } })
 
   return (
     <Card className="border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)]">
       <CardHeader>
-        <CardTitle>Top 10 Regions</CardTitle>
-        <CardDescription>Records by region</CardDescription>
+        <CardTitle>Region Distribution</CardTitle>
+        <CardDescription>Mixed analysis by region</CardDescription>
       </CardHeader>
+
       <CardContent>
-        <ChartContainer config={{ count: { label: 'Records', color: '#7D6FE6' } }} className="w-full h-[300px]">
-          <BarChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 60 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-            <XAxis
+        <ChartContainer config={chartConfig} className="min-h-[350px] w-full">
+          <BarChart
+            accessibilityLayer
+            data={chartData}
+            layout="vertical"
+            margin={{ left: 20, right: 30 }}
+          >
+            <YAxis
               dataKey="region"
-              stroke="rgba(255,255,255,0.5)"
-              angle={-45}
-              textAnchor="end"
-              height={80}
-              tick={{ fontSize: 11 }}
+              type="category"
+              tickLine={false}
+              tickMargin={10}
+              axisLine={false}
+              tick={{ fill: 'rgba(255,255,255,0.6)', fontSize: 11 }}
+              width={100}
             />
-            <YAxis stroke="rgba(255,255,255,0.5)" />
-            <ChartTooltip content={<ChartTooltipContent />} cursor={false} />
-            <Bar dataKey="count" fill="var(--color-count)" radius={[8, 8, 0, 0]} />
+
+            <XAxis dataKey="count" type="number" hide />
+
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent hideLabel />}
+            />
+
+            <Bar
+              dataKey="count"
+              layout="vertical"
+              radius={5}
+              barSize={20}
+            />
           </BarChart>
         </ChartContainer>
       </CardContent>
+
+      <CardFooter className="flex-col items-center gap-2 text-sm">
+        <div className="flex items-center gap-2 leading-none font-medium text-foreground">
+          Top region: {chartData[0]?.region} <TrendingUp className="h-4 w-4" />
+        </div>
+        <div className="text-muted-foreground leading-none text-xs text-center">
+          Showing record distribution across top 10 regions
+        </div>
+      </CardFooter>
     </Card>
   )
 }
