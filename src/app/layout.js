@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Blackcoffer Insights Dashboard",
+  title: "Insights Dashboard",
   description: "Modern business intelligence dashboard with interactive charts and filters",
 };
 
